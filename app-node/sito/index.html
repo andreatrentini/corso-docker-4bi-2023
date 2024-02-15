@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style.css">
+    <!-- Questo link script carica la socket.io lato client (browser) -->
+    <script src="/socket.io/socket.io.js"></script>
     <title>Document</title>
 </head>
 <body>
     <h1>Web app</h1>
+    <div id="main"></div>
+    <div id="registration" style="visibility: hidden;">
+        <input tpye="text" id="nick-name"><button onclick="registrazione()">Registrati</button>
+    </div>
+    <script src="./script.js"></script>
 </body>
 </html>
