@@ -1,5 +1,14 @@
 const config =  {
-    port: 3000
+    port: 3000,
+    messagesId: {
+        connection: 'connection',
+        welcome: 'welcome',
+        registration: 'registration'
+    }
 }
 
-module.exports = config;
+function printConfig() {
+    console.log(config);
+}
+
+module.exports = {config, printConfig};

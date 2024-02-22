@@ -1,8 +1,10 @@
 // Carico il modulo express e lo associo alla costante express
 const express = require('express');
-const config = require ('./config');
 // Aggiungo la libreria socket.io alla mia applicazione
 const socketio = require("socket.io");
+
+const {config} = require ('./config');
+const log = require('./log');
 
 // il mio service corrisponde ad una istanza di express
 const service = express();
@@ -35,6 +37,7 @@ const directorySito = __dirname + '/sito';
 
 // 2. Ordino ad express di usare questa diretory in modo statico
 
+// service.use(log);
 service.use('/', express.static(directorySito));
 
 
@@ -48,11 +51,12 @@ const rtServer = socketio(server);
 // Metto in ascolto il mio real time server di nuove connessioni. La funzione di callback verrà
 // eseguita ogni volta che un client si connette al server. socket è un oggetto che consente la comunicazione
 // fra server e client. Ogni client dispone di un suo oggetto socket.
-rtServer.on('connection', (socket) => {
-    console.log("Un client si è connesso...");
-    socket.emit('welcome', 'Benvenuto nella chat.');
+rtServer.on(config.messagesId.connection, (socket) => {
+    console.log('Un client si è connesso con id:', socket.id);
+    console.log('Numero di client connessi:', rtServer.engine.clientsCount)
+    socket.emit(config.messagesId.welcome, 'Benvenuto nella chat.');    
 
-    socket.on('registration', (nickname) => {
+    socket.on(config.messagesId.registration, (nickname) => {
         socket.nickname = nickname;
         console.log(socket.nickname);
     })
