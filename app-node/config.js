@@ -1,10 +1,5 @@
 const config =  {
-    port: 3000,
-    messagesId: {
-        connection: 'connection',
-        welcome: 'welcome',
-        registration: 'registration'
-    }
+    port: 3000
 }
 
 function printConfig() {

@@ -4,6 +4,7 @@ const express = require('express');
 const socketio = require("socket.io");
 
 const {config} = require ('./config');
+const messages = require('./sito/messages');
 const log = require('./log');
 
 // il mio service corrisponde ad una istanza di express
@@ -51,12 +52,14 @@ const rtServer = socketio(server);
 // Metto in ascolto il mio real time server di nuove connessioni. La funzione di callback verrà
 // eseguita ogni volta che un client si connette al server. socket è un oggetto che consente la comunicazione
 // fra server e client. Ogni client dispone di un suo oggetto socket.
-rtServer.on(config.messagesId.connection, (socket) => {
+rtServer.on(messages.connection, (socket) => {
     console.log('Un client si è connesso con id:', socket.id);
     console.log('Numero di client connessi:', rtServer.engine.clientsCount)
-    socket.emit(config.messagesId.welcome, 'Benvenuto nella chat.');    
+    socket.emit(messages.welcome, 'Benvenuto nella chat.');
+    socket.broadcast.emit(messages.nuovoAmico, 'Un nuovo amico si è connesso.');
 
-    socket.on(config.messagesId.registration, (nickname) => {
+
+    socket.on(messages.registration, (nickname) => {
         socket.nickname = nickname;
         console.log(socket.nickname);
     })
