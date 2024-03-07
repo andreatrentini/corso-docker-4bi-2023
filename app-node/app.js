@@ -55,13 +55,15 @@ const rtServer = socketio(server);
 rtServer.on(messages.connection, (socket) => {
     console.log('Un client si è connesso con id:', socket.id);
     console.log('Numero di client connessi:', rtServer.engine.clientsCount)
-    socket.emit(messages.welcome, 'Benvenuto nella chat.');
-    socket.broadcast.emit(messages.nuovoAmico, 'Un nuovo amico si è connesso.');
+    
+    // Avviso tutti i client che un nuovo client si è connesso
+    // ad eccezione di quello che si è appena connesso: messaggio broadcast
+    socket.broadcast.emit(messages.nuovoAmico, "Nuovo client si è connesso.");
 
+    // Invio a tutti un messaggio con il numero di client connessi: messaggio broadcast
+    rtServer.emit(messages.clientConnessi, rtServer.engine.clientsCount);
 
-    socket.on(messages.registration, (nickname) => {
-        socket.nickname = nickname;
-        console.log(socket.nickname);
-    })
+    // Invio un messaggio di benvenuto al client appena connesso: messaggio unicast
+    socket.emit(messages.welcome, "Benvenuto nella chat. Per inviare messaggi devi prima registrarti.");
 })
 
