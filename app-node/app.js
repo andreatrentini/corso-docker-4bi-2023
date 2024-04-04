@@ -3,7 +3,7 @@ const express = require('express');
 // Aggiungo la libreria socket.io alla mia applicazione
 const socketio = require("socket.io");
 
-const {config} = require ('./config');
+const { config } = require('./config');
 const messages = require('./sito/messages');
 const log = require('./log');
 
@@ -55,7 +55,7 @@ const rtServer = socketio(server);
 rtServer.on(messages.connection, (socket) => {
     console.log('Un client si è connesso con id:', socket.id);
     console.log('Numero di client connessi:', rtServer.engine.clientsCount)
-    
+
     // Avviso tutti i client che un nuovo client si è connesso
     // ad eccezione di quello che si è appena connesso: messaggio broadcast
     socket.broadcast.emit(messages.nuovoAmico, "Nuovo client si è connesso.");
@@ -64,6 +64,40 @@ rtServer.on(messages.connection, (socket) => {
     rtServer.emit(messages.clientConnessi, rtServer.engine.clientsCount);
 
     // Invio un messaggio di benvenuto al client appena connesso: messaggio unicast
-    socket.emit(messages.welcome, "Benvenuto nella chat. Per inviare messaggi devi prima registrarti.");
-})
+    socket.emit(messages.welcome, "Benenuto nella chat. Per inviare messaggi devi prima registrarti.");
 
+    
+    socket.on(messages.registrazione, (nickname) => {
+        console.log('Richiesta di registrazione con nickname:', nickname);
+        // Controllo che il nickname non sia già stato utilizzato        
+        
+        if (controlloNickname(nickname)) {
+            // Il nickname non è stato utilizzato e quindi lo registro
+            socket.data.nickname = nickname;
+            // Invio un messaggio di conferma al client
+            socket.emit(messages.esitoRegistrazione, { esito: true, nickname: nickname });
+            // Creo un array con i nickname dei client connessi
+            let nicknames = clientConnessi.map((client) => {
+                return client.data.nickname;
+            });
+            // Invio un broadcast con l'elenco dei nickname
+            rtServer.emit(messages.nicknames, nicknames);
+        }
+        else {
+            // Comunico che la registrazione non è andata a buon fine (nome già utilizzato)
+            socket.emit(messages.esitoRegistrazione, { esito: false, nickname: nickname });
+        }
+    });
+   
+});
+
+async function controlloNickname(nickname) {
+    // 1. recupero tutti i socket connessi al server
+    const clients = await rtServer.fetchSockets();
+    for(const client of clients) {
+        if (client.data.nickname === nickname) {
+            return true;
+        }
+    }
+    return false;
+}
