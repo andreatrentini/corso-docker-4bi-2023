@@ -67,20 +67,19 @@ rtServer.on(messages.connection, (socket) => {
     socket.emit(messages.welcome, "Benenuto nella chat. Per inviare messaggi devi prima registrarti.");
 
     
-    socket.on(messages.registrazione, (nickname) => {
+    socket.on(messages.registrazione, async (nickname) => {
         console.log('Richiesta di registrazione con nickname:', nickname);
         // Controllo che il nickname non sia già stato utilizzato        
         
-        if (controlloNickname(nickname)) {
+        if (await controlloNickname(nickname)) {
             // Il nickname non è stato utilizzato e quindi lo registro
             socket.data.nickname = nickname;
             // Invio un messaggio di conferma al client
             socket.emit(messages.esitoRegistrazione, { esito: true, nickname: nickname });
-            // Creo un array con i nickname dei client connessi
-            let nicknames = clientConnessi.map((client) => {
-                return client.data.nickname;
-            });
-            // Invio un broadcast con l'elenco dei nickname
+            
+            // Invio in broadcast i nickname di tutti i client connessi    
+            let nicknames = await getNicknames();   
+            console.log(nicknames);                
             rtServer.emit(messages.nicknames, nicknames);
         }
         else {
@@ -92,12 +91,35 @@ rtServer.on(messages.connection, (socket) => {
 });
 
 async function controlloNickname(nickname) {
-    // 1. recupero tutti i socket connessi al server
-    const clients = await rtServer.fetchSockets();
-    for(const client of clients) {
-        if (client.data.nickname === nickname) {
-            return false;
-        }
+    try {
+        // 1. recupero tutti i socket connessi al server
+        const clients = await rtServer.fetchSockets();
+        for(const client of clients) {
+            if (client.data.nickname && client.data.nickname.toLocaleUpperCase() == nickname.toLocaleUpperCase()) {
+                console.log(client.data.nickname.toLocaleUpperCase());
+                return false;
+            }
+        }        
+        return true;
     }
-    return true;
+    catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+async function getNicknames() {
+    try {
+        const clients = await rtServer.fetchSockets();
+        let nicknames = [];
+
+        for(const client of clients) {
+            nicknames.push(client.data.nickname);
+        }
+        return nicknames;
+    }
+    catch (error) {
+        console.error(error);
+        return [];
+    }
 }

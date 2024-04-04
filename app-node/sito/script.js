@@ -12,6 +12,10 @@ socketClient.on(messages.clientConnessi, (numero) => {
     console.log('Numero di client connessi:', numero);
 });
 
+socketClient.on(messages.nicknames, (nicknames) => {
+    console.log('Nicknames:', nicknames);
+});
+
 socketClient.on(messages.welcome, (messaggio) => {
     // 1. visualizzare il messaggio di benvenuto
     visualizzaMessaggi(messaggio);
