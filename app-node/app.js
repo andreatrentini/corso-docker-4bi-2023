@@ -96,8 +96,8 @@ async function controlloNickname(nickname) {
     const clients = await rtServer.fetchSockets();
     for(const client of clients) {
         if (client.data.nickname === nickname) {
-            return true;
+            return false;
         }
     }
-    return false;
+    return true;
 }
