@@ -33,9 +33,21 @@ socketClient.on(messages.esitoRegistrazione, (risposta) => {
         // Nascondo il form di registrazione
         let registrazione = document.getElementById('registration');
         registrazione.style.visibility = 'hidden';
+        let areamessaggi = document.getElementById('areamessaggi');
+        areamessaggi.style.visibility = 'visible';
     }
     else {
         alert('Il nickname è già stato utilizzato. Scegline un altro.');    
+    }
+});
+
+socketClient.on(messages.elencoMessaggi, (elencoMessaggi) => {
+    let messaggi = document.getElementById('messaggi');
+    messaggi.innerHTML = '';
+    for (const messaggio of messaggi) {
+        let p = document.createElement('p');
+        p.innerText = messaggio.nickname + ': ' + messaggio.messaggio;
+        messaggi.appendChild(p);
     }
 });
 
@@ -69,5 +81,13 @@ function registrazione() {
         console.log('Registrazione');
         // 3. inviare il nome al server
         socketClient.emit(messages.registrazione, nickname);
+    }
+}
+
+function invia() {
+    let messaggioInput = document.getElementById('messaggio');
+    if (messaggioInput.value != '') {
+        socketClient.emit(messages.nuovoMessaggio, { nickname: nickname, messaggio: messaggio });
+        messaggioInput.value = '';
     }
 }

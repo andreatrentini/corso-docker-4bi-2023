@@ -6,7 +6,9 @@ const messages = {
     welcome: 'welcome',
     registrazione: 'registrazione',
     esitoRegistrazione: 'confermaregistrazione',
-    nicknames: 'nicknames'
+    nicknames: 'nicknames',
+    nuovoMessaggio: 'nuovomessaggio',
+    elencoMessaggi: 'elencomessaggi'
 }
 
 // Se esiste l'oggetto module e l'oggetto module.exports, esporta la costante messages (viene eseguita

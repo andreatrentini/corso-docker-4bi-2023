@@ -10,6 +10,8 @@ const log = require('./log');
 // il mio service corrisponde ad una istanza di express
 const service = express();
 
+const elencoMessaggi = [];
+
 /*
 // Il metodo che segue è utilizzato soprattutto per la realizzazione di web service, non per la pubblicazione di interi siti web,
 // composta da più file e sottodirectory. Il pronlema è che questo sistema prevede ll'suo del metodo get per ognuno dei file del sito
@@ -86,6 +88,11 @@ rtServer.on(messages.connection, (socket) => {
             // Comunico che la registrazione non è andata a buon fine (nome già utilizzato)
             socket.emit(messages.esitoRegistrazione, { esito: false, nickname: nickname });
         }
+    });
+
+    socket.on(messages.nuovoMessaggio, (messaggio) => {
+        elencoMessaggi.push(messaggio);
+        rtServer.emit(messages.elencoMessaggi, elencoMessaggi);
     });
    
 });
